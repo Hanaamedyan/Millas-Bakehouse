@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Millas Bakehouse — Ekte håndverk, gode smaker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,600;1,700;1,800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --cream:      #FBF7EF;
+      --cream-2:    #F4EAD6;
+      --cream-3:    #EAD9BE;
+      --cream-4:    #DFC9A4;
+      --brown:      #3D1C0A;
+      --brown-mid:  #7A3B1E;
+      --caramel:    #C4783C;
+      --caramel-lt: #DFA870;
+      --rose:       #D4896A;
+      --rose-lt:    #F0CCBA;
+      --muted:      #9B7B62;
+      --muted-lt:   #C8A88E;
+      --text:       #2A1208;
+      --text-2:     #5C3020;
+      --white:      #FFFEF8;
+      --shadow:     rgba(60,28,10,0.10);
+      --shadow-lg:  rgba(60,28,10,0.18);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--cream);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── CURSOR ── */
+    #cursor {
+      position: fixed; width: 10px; height: 10px;
+      background: var(--caramel); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: width .25s, height .25s, background .25s;
+      mix-blend-mode: multiply;
+    }
+    #cursor-ring {
+      position: fixed; width: 36px; height: 36px;
+      border: 1.5px solid rgba(196,120,60,.4);
+      border-radius: 50%; pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: left .13s ease, top .13s ease, width .25s, height .25s;
+    }
+    body.c-grow #cursor  { width: 52px; height: 52px; background: var(--rose); }
+    body.c-grow #cursor-ring { width: 68px; height: 68px; border-color: rgba(212,137,106,.4); }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--cream-2); }
+    ::-webkit-scrollbar-thumb { background: var(--caramel); }
+
+    /* ── REVEAL ANIMATIONS ── */
+    .reveal {
+      opacity: 0; transform: translateY(48px);
+      transition: opacity .85s cubic-bezier(.16,1,.3,1), transform .85s cubic-bezier(.16,1,.3,1);
+    }
+    .reveal.on { opacity: 1; transform: translateY(0); }
+    .d1{transition-delay:.1s} .d2{transition-delay:.2s} .d3{transition-delay:.3s}
+    .d4{transition-delay:.4s} .d5{transition-delay:.5s}
+
+    .reveal-l {
+      opacity: 0; transform: translateX(-60px);
+      transition: opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1);
+    }
+    .reveal-l.on { opacity: 1; transform: translateX(0); }
+
+    .reveal-r {
+      opacity: 0; transform: translateX(60px);
+      transition: opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1);
+    }
+    .reveal-r.on { opacity: 1; transform: translateX(0); }
+
+    .img-wipe {
+      clip-path: inset(0 100% 0 0);
+      transition: clip-path 1.1s cubic-bezier(.77,0,.18,1);
+    }
+    .img-wipe.on { clip-path: inset(0 0% 0 0); }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 72px;
+      transition: background .35s, box-shadow .35s;
+    }
+    nav.scrolled {
+      background: rgba(251,247,239,.96);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 1px 0 var(--cream-3);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; cursor: none;
+    }
+    .nav-logo-icon {
+      width: 34px; height: 34px; background: var(--brown);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    }
+    .nav-logo-icon svg { width: 18px; height: 18px; color: var(--caramel-lt); }
+    .logo-text {
+      font-family: 'Playfair Display', serif;
+      font-style: italic; font-weight: 700; font-size: 19px;
+      color: var(--brown); letter-spacing: .5px;
+    }
+    .logo-text span { color: var(--caramel); font-style: normal; }
+
+    .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+    .nav-links a {
+      font-size: 13px; font-weight: 500; letter-spacing: .5px;
+      color: var(--muted); text-decoration: none; cursor: none;
+      transition: color .2s; position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -3px; left: 0; right: 0;
+      height: 1px; background: var(--caramel);
+      transform: scaleX(0); transform-origin: left; transition: transform .25s;
+    }
+    .nav-links a:hover { color: var(--brown); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+
+    .nav-cta {
+      background: var(--brown); color: var(--caramel-lt) !important;
+      font-size: 13px !important; font-weight: 600 !important;
+      letter-spacing: 1px !important; padding: 10px 24px;
+      border-radius: 50px; transition: background .2s !important;
+      text-decoration: none; cursor: none;
+    }
+    .nav-cta:hover { background: var(--brown-mid) !important; }
+    .nav-cta::after { display: none !important; }
+
+    .burger {
+      display: none; flex-direction: column; gap: 5px;
+      cursor: none; background: none; border: none; padding: 8px;
+    }
+    .burger span { display: block; width: 22px; height: 1.5px; background: var(--brown); transition: all .3s; }
+
+    .mob-nav {
+      display: none; position: fixed; inset: 0;
+      background: var(--cream); z-index: 99;
+      flex-direction: column; align-items: center; justify-content: center; gap: 32px;
+    }
+    .mob-nav.open { display: flex; }
+    .mob-nav a {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      font-size: 48px; font-weight: 700;
+      color: var(--brown); text-decoration: none; cursor: none;
+      transition: color .2s;
+    }
+    .mob-nav a:hover { color: var(--caramel); }
+
+    /* ── HERO ── */
+    #hero {
+      position: relative; height: 100vh; min-height: 680px; overflow: hidden;
+    }
+    .hero-bg { position: absolute; inset: 0; z-index: 0; }
+    .hero-bg img {
+      width: 100%; height: 100%; object-fit: cover; object-position: center 60%;
+      transform: scale(1.08);
+      transition: transform 9s cubic-bezier(.25,.46,.45,.94);
+    }
+    #hero.on .hero-bg img { transform: scale(1); }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(251,247,239,.15) 0%,
+        rgba(42,18,8,.1) 40%,
+        rgba(42,18,8,.72) 100%
+      );
+    }
+    /* Warm left accent */
+    .hero-bar {
+      position: absolute; top: 0; left: 0; bottom: 0; width: 3px;
+      background: var(--caramel); z-index: 3;
+    }
+
+    .hero-content {
+      position: relative; z-index: 2; height: 100%;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 0 52px 88px; max-width: 1400px; margin: 0 auto;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: rgba(251,247,239,.15); border: 1px solid rgba(251,247,239,.3);
+      backdrop-filter: blur(8px);
+      color: #FAF0E0; font-size: 11px; font-weight: 600;
+      letter-spacing: 2.5px; text-transform: uppercase;
+      padding: 8px 18px; width: fit-content; border-radius: 50px;
+      margin-bottom: 28px;
+      opacity: 0; transform: translateY(14px);
+      transition: opacity .6s .3s, transform .6s .3s;
+    }
+    #hero.on .hero-badge { opacity: 1; transform: translateY(0); }
+    .badge-leaf {
+      width: 18px; height: 18px; color: var(--caramel-lt);
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(58px, 9vw, 128px);
+      font-weight: 800; font-style: italic;
+      line-height: .94; color: var(--white);
+      margin-bottom: 32px;
+    }
+    .hero-title .line { display: block; overflow: hidden; }
+    .hero-title .line span {
+      display: block; transform: translateY(110%);
+      transition: transform .85s cubic-bezier(.16,1,.3,1);
+    }
+    #hero.on .hero-title .line:nth-child(1) span { transform:translateY(0); transition-delay:.38s; }
+    #hero.on .hero-title .line:nth-child(2) span { transform:translateY(0); transition-delay:.52s; }
+    #hero.on .hero-title .line:nth-child(3) span { transform:translateY(0); transition-delay:.66s; }
+    .hero-title .accent { color: var(--caramel-lt); font-style: normal; }
+
+    .hero-bottom {
+      display: flex; align-items: center; gap: 40px; flex-wrap: wrap;
+      opacity: 0; transform: translateY(14px);
+      transition: opacity .7s 1s, transform .7s 1s;
+    }
+    #hero.on .hero-bottom { opacity: 1; transform: translateY(0); }
+    .hero-sub {
+      font-size: 16px; color: rgba(255,252,240,.8);
+      line-height: 1.75; max-width: 360px;
+    }
+    .hero-ctas { display: flex; gap: 14px; }
+
+    .btn-main {
+      display: inline-flex; align-items: center; gap: 9px;
+      background: var(--caramel); color: white;
+      font-size: 13px; font-weight: 600; letter-spacing: .5px;
+      padding: 14px 30px; border-radius: 50px;
+      text-decoration: none; cursor: none;
+      transition: background .2s, transform .2s;
+    }
+    .btn-main:hover { background: var(--brown-mid); transform: translateY(-2px); }
+
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 9px;
+      border: 1.5px solid rgba(255,252,240,.4); color: rgba(255,252,240,.9);
+      font-size: 13px; font-weight: 600; letter-spacing: .5px;
+      padding: 14px 30px; border-radius: 50px;
+      text-decoration: none; cursor: none;
+      transition: border-color .2s, transform .2s;
+    }
+    .btn-outline:hover { border-color: rgba(255,252,240,.8); transform: translateY(-2px); }
+
+    /* scroll indicator */
+    .s-ind {
+      position: absolute; bottom: 28px; right: 52px; z-index: 2;
+      display: flex; flex-direction: column; align-items: center; gap: 7px;
+      opacity: 0; transition: opacity .6s 1.6s;
+    }
+    #hero.on .s-ind { opacity: 1; }
+    .s-ind span {
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      color: rgba(255,252,240,.5); writing-mode: vertical-rl;
+    }
+    .s-line {
+      width: 1px; height: 52px; background: rgba(255,252,240,.15); overflow: hidden; position: relative;
+    }
+    .s-line::after {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 100%; height: 40%; background: var(--caramel-lt);
+      animation: sdown 1.8s ease infinite;
+    }
+    @keyframes sdown { 0%{top:-40%} 100%{top:140%} }
+
+    /* ── MARQUEE ── */
+    .marquee-band {
+      background: var(--brown); padding: 15px 0; overflow: hidden;
+    }
+    .mq-track {
+      display: flex; width: max-content;
+      animation: mq 24s linear infinite;
+    }
+    .mq-track:hover { animation-play-state: paused; }
+    @keyframes mq { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+    .mq-item {
+      display: flex; align-items: center; gap: 20px; padding: 0 28px; white-space: nowrap;
+    }
+    .mq-item span {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      font-size: 18px; font-weight: 600; color: var(--caramel-lt); letter-spacing: .5px;
+    }
+    .mq-dot {
+      width: 4px; height: 4px; border-radius: 50%;
+      background: rgba(196,120,60,.5); flex-shrink: 0;
+    }
+
+    /* ── GHOST LABEL ── */
+    .ghost {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      font-size: clamp(60px, 11vw, 160px); font-weight: 900;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(60,28,10,.07);
+      line-height: 1; user-select: none; pointer-events: none;
+    }
+
+    /* ── PRODUCT BLOCKS (LN alternating) ── */
+    .prod-block {
+      display: grid; grid-template-columns: 1fr 1fr;
+      min-height: 560px; overflow: hidden; margin-bottom: 3px;
+    }
+    .prod-block:nth-child(even) .prod-img { order: 2; }
+    .prod-block:nth-child(even) .prod-txt { order: 1; }
+
+    .prod-img { position: relative; overflow: hidden; }
+    .prod-img img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .85s cubic-bezier(.25,.46,.45,.94);
+    }
+    .prod-block:hover .prod-img img { transform: scale(1.04); }
+    .prod-img-ov {
+      position: absolute; inset: 0;
+      background: rgba(42,18,8,.12); transition: background .35s;
+    }
+    .prod-block:hover .prod-img-ov { background: rgba(42,18,8,.04); }
+
+    .prod-txt {
+      background: var(--white);
+      padding: 72px; display: flex; flex-direction: column; justify-content: center;
+      position: relative;
+    }
+    .prod-num {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      font-size: 96px; font-weight: 900; color: rgba(60,28,10,.04);
+      position: absolute; top: 20px; right: 28px; line-height: 1;
+    }
+    .prod-eyebrow {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 2.5px; text-transform: uppercase;
+      color: var(--caramel); margin-bottom: 16px;
+    }
+    .prod-eyebrow::before {
+      content: ''; display: block; width: 22px; height: 1.5px; background: var(--caramel);
+    }
+    .prod-name {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      font-size: clamp(34px, 3.5vw, 52px); font-weight: 800;
+      color: var(--brown); line-height: 1.1; margin-bottom: 18px;
+    }
+    .prod-desc {
+      font-size: 15px; color: var(--muted); line-height: 1.85;
+      margin-bottom: 32px; max-width: 420px;
+    }
+    .prod-link {
+      display: inline-flex; align-items: center; gap: 9px;
+      font-size: 13px; font-weight: 600; color: var(--caramel);
+      cursor: none; transition: gap .2s;
+    }
+    .prod-link:hover { gap: 14px; }
+    .prod-link svg { width: 16px; height: 16px; }
+
+    /* ── PRODUCT STRIP (horizontal drag) ── */
+    #products { padding: 100px 0; background: var(--cream-2); }
+    .strip-header {
+      padding: 0 52px; max-width: 1400px; margin: 0 auto 52px;
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 24px;
+    }
+    .drag-hint {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 12px; font-weight: 500; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--muted-lt);
+    }
+    .drag-hint svg { width: 18px; height: 18px; color: var(--caramel); }
+
+    .p-strip {
+      display: flex; gap: 16px; padding: 8px 52px 24px;
+      overflow-x: scroll; cursor: grab; scrollbar-width: none;
+    }
+    .p-strip:active { cursor: grabbing; }
+    .p-strip::-webkit-scrollbar { display: none; }
+
+    .p-card {
+      flex-shrink: 0; width: clamp(240px, 22vw, 320px);
+      background: var(--white);
+      border-radius: 16px; overflow: hidden;
+      box-shadow: 0 4px 20px var(--shadow);
+      cursor: none; transition: transform .28s, box-shadow .28s;
+    }
+    .p-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px var(--shadow-lg); }
+    .p-card-img {
+      width: 100%; height: 220px; overflow: hidden; position: relative;
+    }
+    .p-card-img img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .6s cubic-bezier(.25,.46,.45,.94);
+      pointer-events: none;
+    }
+    .p-card:hover .p-card-img img { transform: scale(1.07); }
+    .p-card-oos {
+      position: absolute; top: 12px; right: 12px;
+      background: rgba(42,18,8,.75); color: rgba(255,252,240,.8);
+      font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 50px;
+    }
+    .p-card-body { padding: 20px; }
+    .p-card-name {
+      font-family: 'Playfair Display', serif; font-weight: 700;
+      font-size: 17px; color: var(--brown); margin-bottom: 6px;
+    }
+    .p-card-note {
+      font-size: 12px; color: var(--muted-lt); margin-bottom: 14px; line-height: 1.5;
+    }
+    .p-card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .p-card-price {
+      font-family: 'Playfair Display', serif; font-weight: 800;
+      font-size: 20px; color: var(--caramel);
+    }
+    .p-card-price span { font-size: 13px; font-weight: 500; color: var(--muted); font-family: 'DM Sans', sans-serif; }
+    .p-card-btn {
+      width: 34px; height: 34px; background: var(--cream-2);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      cursor: none; transition: background .2s;
+    }
+    .p-card-btn:hover { background: var(--caramel); }
+    .p-card-btn:hover svg { color: white; }
+    .p-card-btn svg { width: 15px; height: 15px; color: var(--caramel); transition: color .2s; }
+
+    /* ── STORY ── */
+    #story {
+      display: grid; grid-template-columns: 1fr 1fr;
+      min-height: 680px;
+    }
+    .story-img { position: relative; overflow: hidden; }
+    .story-img img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+    .story-img-ov {
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, transparent 55%, var(--cream));
+    }
+    .story-content {
+      background: var(--cream); padding: 100px 80px 100px 64px;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .story-quote {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      font-size: clamp(28px, 3vw, 42px); font-weight: 700;
+      color: var(--brown); line-height: 1.3; margin: 20px 0 28px;
+    }
+    .story-quote .accent { color: var(--caramel); }
+    .story-body {
+      font-size: 15px; color: var(--muted); line-height: 1.9;
+      margin-bottom: 40px; max-width: 460px;
+    }
+    .story-sig {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      font-size: 28px; color: var(--brown-mid);
+    }
+    .story-sig span { display: block; font-family: 'DM Sans', sans-serif; font-style: normal; font-size: 13px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
+
+    /* ── CAKE ORDER BAND ── */
+    .cake-band {
+      background: var(--caramel);
+      padding: 80px 52px;
+    }
+    .cake-inner {
+      max-width: 1400px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; gap: 48px; flex-wrap: wrap;
+    }
+    .cake-text {}
+    .cake-eyebrow {
+      font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase;
+      color: rgba(255,252,240,.7); margin-bottom: 10px;
+    }
+    .cake-headline {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      font-size: clamp(36px, 5vw, 60px); font-weight: 800;
+      color: white; line-height: 1.05;
+    }
+    .cake-sub { font-size: 15px; color: rgba(255,252,240,.8); margin-top: 12px; }
+    .btn-cream {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--white); color: var(--brown);
+      font-size: 13px; font-weight: 700; letter-spacing: .5px;
+      padding: 16px 36px; border-radius: 50px;
+      text-decoration: none; cursor: none; flex-shrink: 0;
+      transition: background .2s, transform .2s;
+    }
+    .btn-cream:hover { background: var(--cream-2); transform: translateY(-2px); }
+
+    /* ── GALLERY STRIP ── */
+    #gallery { padding: 100px 0; overflow: hidden; }
+    .gal-header {
+      padding: 0 52px; max-width: 1400px; margin: 0 auto 52px;
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 24px;
+    }
+    .g-strip {
+      display: flex; gap: 4px; padding: 0 52px;
+      overflow-x: scroll; cursor: grab; scrollbar-width: none;
+    }
+    .g-strip:active { cursor: grabbing; }
+    .g-strip::-webkit-scrollbar { display: none; }
+    .g-card {
+      flex-shrink: 0; width: clamp(240px, 24vw, 380px); height: 480px;
+      overflow: hidden; position: relative; border-radius: 12px;
+    }
+    .g-card img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .7s cubic-bezier(.25,.46,.45,.94);
+      pointer-events: none;
+    }
+    .g-card:hover img { transform: scale(1.06); }
+    .g-card-ov {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(42,18,8,.8) 0%, transparent 55%);
+      border-radius: 12px; padding: 24px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+    }
+    .g-card-tag {
+      font-size: 10px; font-weight: 600; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--caramel-lt); margin-bottom: 6px;
+    }
+    .g-card-name {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      font-size: 22px; font-weight: 700; color: white;
+    }
+
+    /* ── VALUES ── */
+    #values {
+      padding: 100px 52px; background: var(--white);
+    }
+    .values-inner { max-width: 1400px; margin: 0 auto; }
+    .values-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 64px; }
+    .val-card {
+      background: var(--cream); padding: 56px 48px;
+      transition: background .25s;
+    }
+    .val-card:hover { background: var(--cream-2); }
+    .val-icon {
+      width: 52px; height: 52px; background: var(--rose-lt);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      margin-bottom: 28px;
+    }
+    .val-icon svg { width: 24px; height: 24px; color: var(--caramel); }
+    .val-title {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      font-size: 24px; font-weight: 700; color: var(--brown);
+      margin-bottom: 14px;
+    }
+    .val-desc { font-size: 14px; color: var(--muted); line-height: 1.85; }
+
+    /* ── INSTAGRAM SECTION ── */
+    #instagram { padding: 80px 52px; background: var(--cream-2); }
+    .insta-inner { max-width: 1400px; margin: 0 auto; text-align: center; }
+    .insta-handle {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: 'Playfair Display', serif; font-style: italic;
+      font-size: 22px; font-weight: 700; color: var(--brown);
+      text-decoration: none; cursor: none; margin-top: 12px;
+      transition: color .2s;
+    }
+    .insta-handle:hover { color: var(--caramel); }
+    .insta-handle svg { width: 22px; height: 22px; }
+    .insta-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr);
+      gap: 4px; margin-top: 40px;
+    }
+    .insta-cell {
+      aspect-ratio: 1; overflow: hidden; position: relative; cursor: none;
+    }
+    .insta-cell img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .5s;
+    }
+    .insta-cell:hover img { transform: scale(1.08); }
+    .insta-cell-ov {
+      position: absolute; inset: 0;
+      background: rgba(196,120,60,.0); display: flex;
+      align-items: center; justify-content: center;
+      transition: background .3s;
+    }
+    .insta-cell:hover .insta-cell-ov { background: rgba(196,120,60,.45); }
+    .insta-cell-ov svg { width: 28px; height: 28px; color: white; opacity: 0; transition: opacity .3s; }
+    .insta-cell:hover .insta-cell-ov svg { opacity: 1; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--brown); padding: 64px 52px 40px;
+    }
+    .footer-top {
+      max-width: 1400px; margin: 0 auto;
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px; margin-bottom: 52px;
+    }
+    .footer-brand p {
+      font-size: 14px; color: rgba(255,252,240,.5);
+      line-height: 1.8; margin: 16px 0 24px; max-width: 280px;
+    }
+    .f-socials { display: flex; gap: 12px; }
+    .f-social {
+      width: 36px; height: 36px; border: 1px solid rgba(255,252,240,.15);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      cursor: none; transition: border-color .2s, background .2s;
+    }
+    .f-social:hover { border-color: var(--caramel); background: rgba(196,120,60,.12); }
+    .f-social svg { width: 15px; height: 15px; fill: rgba(255,252,240,.45); transition: fill .2s; }
+    .f-social:hover svg { fill: var(--caramel-lt); }
+
+    .footer-col h5 {
+      font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase;
+      color: rgba(255,252,240,.9); margin-bottom: 22px;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .footer-col ul a {
+      font-size: 14px; color: rgba(255,252,240,.45);
+      text-decoration: none; cursor: none; transition: color .2s;
+    }
+    .footer-col ul a:hover { color: var(--caramel-lt); }
+
+    .footer-bottom {
+      max-width: 1400px; margin: 0 auto;
+      border-top: 1px solid rgba(255,252,240,.08); padding-top: 28px;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 16px; flex-wrap: wrap;
+    }
+    .footer-bottom p { font-size: 13px; color: rgba(255,252,240,.3); }
+    .f-links { display: flex; gap: 24px; }
+    .f-links a {
+      font-size: 12px; color: rgba(255,252,240,.3);
+      text-decoration: none; cursor: none; transition: color .2s;
+    }
+    .f-links a:hover { color: rgba(255,252,240,.7); }
+
+    /* Back to top */
+    #btt {
+      position: fixed; bottom: 24px; right: 24px; z-index: 90;
+      width: 44px; height: 44px; background: var(--caramel);
+      border-radius: 50%; border: none;
+      display: flex; align-items: center; justify-content: center;
+      cursor: none; opacity: 0; transform: translateY(12px);
+      transition: opacity .3s, transform .3s, background .2s;
+      box-shadow: 0 4px 16px rgba(196,120,60,.4);
+    }
+    #btt.on { opacity: 1; transform: translateY(0); }
+    #btt:hover { background: var(--brown-mid); }
+    #btt svg { width: 18px; height: 18px; color: white; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      #story { grid-template-columns: 1fr; }
+      .story-img { height: 420px; }
+      .story-img-ov { background: linear-gradient(to top, var(--cream) 0%, transparent 40%); }
+      .story-content { padding: 60px 40px; }
+      .values-grid { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 40px; }
+      .insta-grid { grid-template-columns: repeat(3, 1fr); }
+      .insta-cell:nth-child(n+4) { display: none; }
+    }
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-links, .nav-cta { display: none; }
+      .burger { display: flex; }
+
+      .hero-content { padding: 0 20px 100px; }
+      .s-ind { display: none; }
+
+      .prod-block { grid-template-columns: 1fr; min-height: auto; }
+      .prod-block:nth-child(even) .prod-img,
+      .prod-block:nth-child(even) .prod-txt { order: unset; }
+      .prod-img { height: 280px; }
+      .prod-txt { padding: 40px 24px; }
+
+      #products { padding: 64px 0; }
+      .strip-header { padding: 0 20px; flex-direction: column; align-items: flex-start; }
+      .p-strip { padding: 8px 20px 24px; }
+
+      .cake-band { padding: 60px 20px; }
+      .cake-inner { flex-direction: column; align-items: flex-start; }
+
+      #gallery { padding: 64px 0; }
+      .gal-header { padding: 0 20px; flex-direction: column; align-items: flex-start; }
+      .g-strip { padding: 0 20px; }
+
+      #values { padding: 64px 20px; }
+      #instagram { padding: 60px 20px; }
+      .insta-grid { grid-template-columns: repeat(2, 1fr); }
+      .insta-cell:nth-child(n+3) { display: none; }
+
+      footer { padding: 48px 20px 32px; }
+      .footer-top { grid-template-columns: 1fr; gap: 32px; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+
+      body { cursor: auto; }
+      #cursor, #cursor-ring { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+
+  <button id="btt" aria-label="Til toppen">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+    </svg>
+  </button>
+
+  <!-- ── NAV ── -->
+  <nav id="nav">
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z"/>
+        </svg>
+      </div>
+      <span class="logo-text">Millas <span>Bakehouse</span></span>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="#prod-blocks">Produkter</a></li>
+      <li><a href="#story">Vår historie</a></li>
+      <li><a href="#instagram">Instagram</a></li>
+      <li><a href="mailto:millasbakehouse@gmail.com">Kontakt</a></li>
+    </ul>
+
+    <a href="https://millasbakehouse.com" target="_blank" rel="noopener" class="nav-cta">Bestill nå</a>
+
+    <button class="burger" id="burger" aria-label="Meny">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="mob-nav" id="mob-nav">
+    <a href="#prod-blocks" class="mob-l">Produkter</a>
+    <a href="#story" class="mob-l">Historie</a>
+    <a href="#instagram" class="mob-l">Instagram</a>
+    <a href="https://millasbakehouse.com" class="mob-l" target="_blank">Bestill</a>
+  </div>
+
+  <!-- ── HERO ── -->
+  <section id="hero">
+    <div class="hero-bar"></div>
+    <div class="hero-bg">
+      <img
+        src="https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=1920&q=85"
+        alt="Hjemmelagde cookies fra Millas Bakehouse"
+        loading="eager"
+      />
+    </div>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+      <div class="hero-badge">
+        <svg class="badge-leaf" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z"/>
+        </svg>
+        Hjemmelaget i Trondheim
+      </div>
+
+      <h1 class="hero-title">
+        <span class="line"><span>Ekte håndverk,</span></span>
+        <span class="line"><span>gode</span></span>
+        <span class="line"><span class="accent">smaker.</span></span>
+      </h1>
+
+      <div class="hero-bottom">
+        <p class="hero-sub">Cookies, kaker og bakverk laget med kjærlighet og lidenskap — fra Millas kjøkken til ditt bord.</p>
+        <div class="hero-ctas">
+          <a href="https://millasbakehouse.com" target="_blank" rel="noopener" class="btn-main">
+            Se alle produkter
+            <svg style="width:15px;height:15px" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </a>
+          <a href="#story" class="btn-outline">Vår historie</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="s-ind">
+      <div class="s-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- ── MARQUEE ── -->
+  <div class="marquee-band">
+    <div class="mq-track">
+      <div class="mq-item"><span>Biscoff Cookie Slab</span><div class="mq-dot"></div></div>
+      <div class="mq-item"><span>Brunost Cookie</span><div class="mq-dot"></div></div>
+      <div class="mq-item"><span>Chunky Twix</span><div class="mq-dot"></div></div>
+      <div class="mq-item"><span>Chocolate Dipped Sea Salt</span><div class="mq-dot"></div></div>
+      <div class="mq-item"><span>Chunky S'mores</span><div class="mq-dot"></div></div>
+      <div class="mq-item"><span>Oreo Brookie</span><div class="mq-dot"></div></div>
+      <div class="mq-item"><span>Raspberry White Chocolate</span><div class="mq-dot"></div></div>
+      <div class="mq-item"><span>Kakebestilling</span><div class="mq-dot"></div></div>
+      <div class="mq-item"><span>Biscoff Cookie Slab</span><div class="mq-dot"></div></div>
+      <div class="mq-item"><span>Brunost Cookie</span><div class="mq-dot"></div></div>
+      <div class="mq-item"><span>Chunky Twix</span><div class="mq-dot"></div></div>
+      <div class="mq-item"><span>Chocolate Dipped Sea Salt</span><div class="mq-dot"></div></div>
+      <div class="mq-item"><span>Chunky S'mores</span><div class="mq-dot"></div></div>
+      <div class="mq-item"><span>Oreo Brookie</span><div class="mq-dot"></div></div>
+      <div class="mq-item"><span>Raspberry White Chocolate</span><div class="mq-dot"></div></div>
+      <div class="mq-item"><span>Kakebestilling</span><div class="mq-dot"></div></div>
+    </div>
+  </div>
+
+  <!-- ── GHOST LABEL ── -->
+  <div style="overflow:hidden;padding:56px 52px 0;max-width:1400px;margin:0 auto;">
+    <div class="ghost reveal">Produkter</div>
+  </div>
+
+  <!-- ── PRODUCT BLOCKS (LN On/Off Track style) ── -->
+  <section id="prod-blocks" style="padding-top:32px;">
+
+    <div class="prod-block reveal">
+      <div class="prod-img">
+        <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=900&q=80" alt="Signature Cookies" loading="lazy"/>
+        <div class="prod-img-ov"></div>
+      </div>
+      <div class="prod-txt">
+        <div class="prod-num">01</div>
+        <div class="prod-eyebrow">Bestselgere</div>
+        <h3 class="prod-name">Signature Cookies</h3>
+        <p class="prod-desc">Håndlagede cookies i unike smaker som Biscoff Cookie Slab, Chunky Twix og Chocolate Dipped Sea Salt. Hver cookie er laget med premium ingredienser og kjærlighet — ingen to er helt like.</p>
+        <a href="https://millasbakehouse.com" target="_blank" rel="noopener" class="prod-link">
+          Se alle cookies
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="prod-block reveal">
+      <div class="prod-img">
+        <img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=900&q=80" alt="Kakebestilling" loading="lazy"/>
+        <div class="prod-img-ov"></div>
+      </div>
+      <div class="prod-txt">
+        <div class="prod-num">02</div>
+        <div class="prod-eyebrow">Spesialtilbud</div>
+        <h3 class="prod-name">Kakebestilling</h3>
+        <p class="prod-desc">Drømmekaken din, laget etter dine ønsker. Perfekt til bursdager, bryllup, konfirmasjoner eller bare fordi — ta kontakt og vi skaper noe magisk sammen.</p>
+        <a href="https://millasbakehouse.com" target="_blank" rel="noopener" class="prod-link">
+          Bestill din kake
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="prod-block reveal">
+      <div class="prod-img">
+        <img src="https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=900&q=80" alt="Norske smaker" loading="lazy"/>
+        <div class="prod-img-ov"></div>
+      </div>
+      <div class="prod-txt">
+        <div class="prod-num">03</div>
+        <div class="prod-eyebrow">Norsk inspirasjon</div>
+        <h3 class="prod-name">Norske smaker</h3>
+        <p class="prod-desc">Fra den elskede Brunost Cookie til glutenfrie alternativer — Millas Bakehouse feirer norsk smak med en moderne og kreativ vri. Noe for enhver smak og anledning.</p>
+        <a href="https://millasbakehouse.com" target="_blank" rel="noopener" class="prod-link">
+          Opplev smakene
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ── PRODUCT STRIP ── -->
+  <section id="products">
+    <div class="strip-header">
+      <div>
+        <div class="prod-eyebrow reveal" style="margin-bottom:10px;">Vår meny</div>
+        <h2 class="ghost reveal d1" style="font-size:clamp(44px,6vw,80px);-webkit-text-stroke:1px rgba(60,28,10,.1);">Smak deg frem</h2>
+      </div>
+      <div class="drag-hint reveal d2">
+        <span>Dra for å bla</span>
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+      </div>
+    </div>
+
+    <div class="p-strip" id="pstrip">
+
+      <div class="p-card">
+        <div class="p-card-img">
+          <img src="https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=500&q=75" alt="Chocolate Dipped Sea Salt" loading="lazy"/>
+        </div>
+        <div class="p-card-body">
+          <div class="p-card-name">Chocolate Dipped Sea Salt</div>
+          <div class="p-card-note">Søtt møter salt i en perfekt balanse</div>
+          <div class="p-card-footer">
+            <div class="p-card-price">75 <span>NOK</span></div>
+            <a href="https://millasbakehouse.com" target="_blank" rel="noopener" class="p-card-btn">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-card">
+        <div class="p-card-img">
+          <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=500&q=75" alt="Brunost Cookie" loading="lazy"/>
+        </div>
+        <div class="p-card-body">
+          <div class="p-card-name">Brunost Cookie</div>
+          <div class="p-card-note">Ekte norsk smak i en cookie</div>
+          <div class="p-card-footer">
+            <div class="p-card-price">75 <span>NOK</span></div>
+            <a href="https://millasbakehouse.com" target="_blank" rel="noopener" class="p-card-btn">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-card">
+        <div class="p-card-img">
+          <img src="https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?w=500&q=75" alt="Chunky Twix" loading="lazy"/>
+        </div>
+        <div class="p-card-body">
+          <div class="p-card-name">Chunky Twix</div>
+          <div class="p-card-note">Karamell, sjokolade og kjeks — alt i én</div>
+          <div class="p-card-footer">
+            <div class="p-card-price">80 <span>NOK</span></div>
+            <a href="https://millasbakehouse.com" target="_blank" rel="noopener" class="p-card-btn">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-card">
+        <div class="p-card-img">
+          <img src="https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=500&q=75" alt="Biscoff Cookie Slab" loading="lazy"/>
+          <div class="p-card-oos">Utsolgt</div>
+        </div>
+        <div class="p-card-body">
+          <div class="p-card-name">Biscoff Cookie Slab</div>
+          <div class="p-card-note">Den ultimate Biscoff-opplevelsen</div>
+          <div class="p-card-footer">
+            <div class="p-card-price">90 <span>NOK</span></div>
+            <a href="https://millasbakehouse.com" target="_blank" rel="noopener" class="p-card-btn">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-card">
+        <div class="p-card-img">
+          <img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500&q=75" alt="Oreo Brookie" loading="lazy"/>
+        </div>
+        <div class="p-card-body">
+          <div class="p-card-name">Oreo Brookie</div>
+          <div class="p-card-note">Brownie møter cookie — en drøm</div>
+          <div class="p-card-footer">
+            <div class="p-card-price">80 <span>NOK</span></div>
+            <a href="https://millasbakehouse.com" target="_blank" rel="noopener" class="p-card-btn">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-card">
+        <div class="p-card-img">
+          <img src="https://images.unsplash.com/photo-1551879400-111a9087cd86?w=500&q=75" alt="Raspberry White Chocolate" loading="lazy"/>
+        </div>
+        <div class="p-card-body">
+          <div class="p-card-name">Raspberry White Choc</div>
+          <div class="p-card-note">Frisk og søt — perfekt kombinasjon</div>
+          <div class="p-card-footer">
+            <div class="p-card-price">75 <span>NOK</span></div>
+            <a href="https://millasbakehouse.com" target="_blank" rel="noopener" class="p-card-btn">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-card">
+        <div class="p-card-img">
+          <img src="https://images.unsplash.com/photo-1617304827929-ab89fc985c9b?w=500&q=75" alt="Glutenfri Brunost" loading="lazy"/>
+        </div>
+        <div class="p-card-body">
+          <div class="p-card-name">Glutenfri Brunost</div>
+          <div class="p-card-note">Ekte norsk smak — for alle</div>
+          <div class="p-card-footer">
+            <div class="p-card-price">75 <span>NOK</span></div>
+            <a href="https://millasbakehouse.com" target="_blank" rel="noopener" class="p-card-btn">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── STORY ── -->
+  <section id="story">
+    <div class="story-img img-wipe">
+      <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900&q=80" alt="Milla baker" loading="lazy"/>
+      <div class="story-img-ov"></div>
+    </div>
+    <div class="story-content">
+      <div class="prod-eyebrow reveal">Historien bak</div>
+      <h2 class="story-quote reveal d1">
+        "Lidenskap bakt<br/>inn i <span class="accent">hvert eneste</span><br/>stykke."
+      </h2>
+      <p class="story-body reveal d2">
+        Millas Bakehouse ble til da Milla, en 24 år gammel kulinarielev fra Trondheim, valgte å følge hjertet fremfor hodet. Etter å ha forlatt universitetet kastet hun seg inn i en yrkesfaglig kokkeutdanning — og Millas Bakehouse var født.
+      </p>
+      <p class="story-body reveal d3" style="margin-top:-16px;">
+        Filosofien er enkel: ekte håndverk og gode smaker. Ingen snarveier, ingen kompromisser. Bare kjærlighet og de beste ingrediensene — i hvert eneste bakverk.
+      </p>
+      <div class="story-sig reveal d4">
+        Milla
+        <span>Grunnlegger, Millas Bakehouse · Trondheim</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CAKE ORDER BAND ── -->
+  <div class="cake-band">
+    <div class="cake-inner">
+      <div class="cake-text">
+        <div class="cake-eyebrow">Spesialbestilling</div>
+        <h2 class="cake-headline">Din drømmekake<br/>venter på deg.</h2>
+        <p class="cake-sub">Bursdag, bryllup, konfirmasjon eller bare fordi — vi lager den perfekte kaken for deg.</p>
+      </div>
+      <a href="https://millasbakehouse.com" target="_blank" rel="noopener" class="btn-cream">
+        Bestill kakebestilling
+        <svg style="width:15px;height:15px" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- ── GALLERY STRIP ── -->
+  <section id="gallery">
+    <div class="gal-header">
+      <div>
+        <div class="prod-eyebrow reveal">Smak i bilder</div>
+        <h2 class="ghost reveal d1" style="font-size:clamp(40px,5.5vw,80px);-webkit-text-stroke:1px rgba(60,28,10,.1);">Fra kjøkkenet</h2>
+      </div>
+      <div class="drag-hint reveal d2">
+        <span>Dra for å utforske</span>
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+      </div>
+    </div>
+    <div class="g-strip" id="gstrip">
+      <div class="g-card">
+        <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600&q=75" alt="Cookies" loading="lazy"/>
+        <div class="g-card-ov">
+          <div class="g-card-tag">Freshly Baked</div>
+          <div class="g-card-name">Signature Cookies</div>
+        </div>
+      </div>
+      <div class="g-card">
+        <img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=600&q=75" alt="Kake" loading="lazy"/>
+        <div class="g-card-ov">
+          <div class="g-card-tag">Spesialbestilling</div>
+          <div class="g-card-name">Kakebestilling</div>
+        </div>
+      </div>
+      <div class="g-card">
+        <img src="https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&q=75" alt="Cookies nærme" loading="lazy"/>
+        <div class="g-card-ov">
+          <div class="g-card-tag">Premium</div>
+          <div class="g-card-name">Handcrafted</div>
+        </div>
+      </div>
+      <div class="g-card">
+        <img src="https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=600&q=75" alt="Sjokoladekake" loading="lazy"/>
+        <div class="g-card-ov">
+          <div class="g-card-tag">Sesong</div>
+          <div class="g-card-name">Chocolate Dreams</div>
+        </div>
+      </div>
+      <div class="g-card">
+        <img src="https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=600&q=75" alt="Bakverk" loading="lazy"/>
+        <div class="g-card-ov">
+          <div class="g-card-tag">Norsk inspirasjon</div>
+          <div class="g-card-name">Brunost & Mer</div>
+        </div>
+      </div>
+      <div class="g-card">
+        <img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600&q=75" alt="Brookie" loading="lazy"/>
+        <div class="g-card-ov">
+          <div class="g-card-tag">Fan favourite</div>
+          <div class="g-card-name">Oreo Brookie</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── VALUES ── -->
+  <section id="values">
+    <div class="values-inner">
+      <div style="max-width:1400px;margin:0 auto;">
+        <div class="prod-eyebrow reveal">Vår filosofi</div>
+        <div class="ghost reveal d1" style="font-size:clamp(48px,7vw,100px);-webkit-text-stroke:1px rgba(60,28,10,.07);">Med hjerte</div>
+      </div>
+      <div class="values-grid">
+        <div class="val-card reveal">
+          <div class="val-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            </svg>
+          </div>
+          <h3 class="val-title">Laget med kjærlighet</h3>
+          <p class="val-desc">Hvert bakverk lages for hånd med omhu og lidenskap. Vi tar aldri snarveier — for det smaker man.</p>
+        </div>
+        <div class="val-card reveal d1">
+          <div class="val-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+            </svg>
+          </div>
+          <h3 class="val-title">Premium ingredienser</h3>
+          <p class="val-desc">Vi velger nøye ut de beste råvarene. Kvalitet kjenner man på smaken — og det gjenspeiles i hvert eneste stykke.</p>
+        </div>
+        <div class="val-card reveal d2">
+          <div class="val-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+            </svg>
+          </div>
+          <h3 class="val-title">Frakt over hele Norge</h3>
+          <p class="val-desc">Vi sender bakverk over hele landet, pakket med kjærlighet slik at det ankommer like ferskt og deilig som da det forlot kjøkkenet.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── INSTAGRAM ── -->
+  <section id="instagram">
+    <div class="insta-inner">
+      <div class="prod-eyebrow reveal" style="justify-content:center;display:flex;align-items:center;gap:10px;">
+        <span style="display:block;width:22px;height:1.5px;background:var(--caramel);"></span>
+        Følg oss på Instagram
+      </div>
+      <a href="https://www.instagram.com/millasbakehouse" target="_blank" rel="noopener" class="insta-handle reveal d1">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        @millasbakehouse
+      </a>
+      <div class="insta-grid reveal d2">
+        <div class="insta-cell"><img src="https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=400&q=70" alt="" loading="lazy"/><div class="insta-cell-ov"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div></div>
+        <div class="insta-cell"><img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400&q=70" alt="" loading="lazy"/><div class="insta-cell-ov"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div></div>
+        <div class="insta-cell"><img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=400&q=70" alt="" loading="lazy"/><div class="insta-cell-ov"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div></div>
+        <div class="insta-cell"><img src="https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?w=400&q=70" alt="" loading="lazy"/><div class="insta-cell-ov"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div></div>
+        <div class="insta-cell"><img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400&q=70" alt="" loading="lazy"/><div class="insta-cell-ov"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo">
+          <div class="nav-logo-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z"/>
+            </svg>
+          </div>
+          <span class="logo-text" style="color:var(--caramel-lt);">Millas <span style="color:var(--cream-3);">Bakehouse</span></span>
+        </a>
+        <p>Hjemmelaget bakverk med sjel fra Trondheim. Ekte håndverk og gode smaker — bakt med kjærlighet siden dag én.</p>
+        <div class="f-socials">
+          <a href="https://www.instagram.com/millasbakehouse" target="_blank" rel="noopener" class="f-social" aria-label="Instagram">
+            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/millasbakehouse" target="_blank" rel="noopener" class="f-social" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Produkter</h5>
+        <ul>
+          <li><a href="https://millasbakehouse.com" target="_blank">Signature Cookies</a></li>
+          <li><a href="https://millasbakehouse.com" target="_blank">Kakebestilling</a></li>
+          <li><a href="https://millasbakehouse.com" target="_blank">Glutenfrie valg</a></li>
+          <li><a href="https://millasbakehouse.com" target="_blank">Sesongspesial</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Informasjon</h5>
+        <ul>
+          <li><a href="#story">Vår historie</a></li>
+          <li><a href="https://millasbakehouse.com" target="_blank">Frakt & levering</a></li>
+          <li><a href="https://millasbakehouse.com" target="_blank">Retur & refusjon</a></li>
+          <li><a href="mailto:millasbakehouse@gmail.com">Kontakt oss</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Ta kontakt</h5>
+        <ul>
+          <li><a href="mailto:millasbakehouse@gmail.com">millasbakehouse@gmail.com</a></li>
+          <li><a href="https://www.instagram.com/millasbakehouse" target="_blank">@millasbakehouse</a></li>
+          <li><a href="#">Trondheim, Norge</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Millas Bakehouse. Alle rettigheter forbeholdt.</p>
+      <div class="f-links">
+        <a href="#">Personvern</a>
+        <a href="#">Vilkår</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ── Custom cursor
+    const cur = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove',e=>{
+      mx=e.clientX; my=e.clientY;
+      cur.style.left=mx+'px'; cur.style.top=my+'px';
+    });
+    (function loop(){
+      rx+=(mx-rx)*.12; ry+=(my-ry)*.12;
+      ring.style.left=rx+'px'; ring.style.top=ry+'px';
+      requestAnimationFrame(loop);
+    })();
+    document.querySelectorAll('a,button,.p-card,.g-card,.insta-cell,.val-card').forEach(el=>{
+      el.addEventListener('mouseenter',()=>document.body.classList.add('c-grow'));
+      el.addEventListener('mouseleave',()=>document.body.classList.remove('c-grow'));
+    });
+
+    // ── Navbar scroll
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>60),{passive:true});
+
+    // ── Hero load
+    const hero = document.getElementById('hero');
+    const triggerHero = ()=>hero.classList.add('on');
+    window.addEventListener('load',triggerHero);
+    setTimeout(triggerHero,150);
+
+    // ── Mobile menu
+    const burger=document.getElementById('burger');
+    const mobNav=document.getElementById('mob-nav');
+    let mOpen=false;
+    burger.addEventListener('click',()=>{
+      mOpen=!mOpen; mobNav.classList.toggle('open',mOpen);
+      const s=burger.querySelectorAll('span');
+      s[0].style.transform=mOpen?'rotate(45deg) translate(5px,5px)':'';
+      s[1].style.opacity=mOpen?'0':'1';
+      s[2].style.transform=mOpen?'rotate(-45deg) translate(5px,-5px)':'';
+    });
+    document.querySelectorAll('.mob-l').forEach(l=>l.addEventListener('click',()=>{
+      mOpen=false; mobNav.classList.remove('open');
+      burger.querySelectorAll('span').forEach(s=>{s.style.transform='';s.style.opacity='';});
+    }));
+
+    // ── Scroll reveal
+    const obs=new IntersectionObserver(entries=>{
+      entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');obs.unobserve(e.target);}});
+    },{threshold:.07,rootMargin:'0px 0px -36px 0px'});
+    document.querySelectorAll('.reveal,.reveal-l,.reveal-r,.img-wipe').forEach(el=>obs.observe(el));
+
+    // ── Drag scroll (product strip + gallery strip)
+    [document.getElementById('pstrip'), document.getElementById('gstrip')].forEach(strip=>{
+      if(!strip) return;
+      let down=false,sx,sl;
+      strip.addEventListener('mousedown',e=>{down=true;sx=e.pageX-strip.offsetLeft;sl=strip.scrollLeft;strip.style.cursor='grabbing';});
+      strip.addEventListener('mouseleave',()=>{down=false;strip.style.cursor='grab';});
+      strip.addEventListener('mouseup',()=>{down=false;strip.style.cursor='grab';});
+      strip.addEventListener('mousemove',e=>{if(!down)return;e.preventDefault();strip.scrollLeft=sl-(e.pageX-strip.offsetLeft-sx)*1.4;});
+      let tx=0,tsl=0;
+      strip.addEventListener('touchstart',e=>{tx=e.touches[0].pageX;tsl=strip.scrollLeft;},{passive:true});
+      strip.addEventListener('touchmove',e=>{strip.scrollLeft=tsl+(tx-e.touches[0].pageX);},{passive:true});
+    });
+
+    // ── Back to top
+    const btt=document.getElementById('btt');
+    window.addEventListener('scroll',()=>btt.classList.toggle('on',scrollY>500),{passive:true});
+    btt.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+    // ── Smooth anchor
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click',e=>{
+        const t=document.querySelector(a.getAttribute('href'));
+        if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}
+      });
+    });
+  </script>
+</body>
+</html>
